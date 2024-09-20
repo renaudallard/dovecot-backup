@@ -234,7 +234,7 @@ VAR_COUNT_USER=0
 VAR_COUNT_FAIL=0
 
 # FreeBSD specific commands
-if [ "$OSTYPE" = "FreeBSD" ]; then
+if [ "$(uname -s)" = "FreeBSD" ] || [ "$(uname -s)" = "OpenBSD" ] ; then
         DSYNC_COMMAND=`command -v doveadm`
         STAT_COMMAND_PARAM_FORMAT='-f'
         STAT_COMMAND_ARG_FORMAT_USER='%Su'
@@ -371,7 +371,7 @@ headerblock "Start backup of the mailboxes [`$DATE_COMMAND '+%a, %d %b %Y %H:%M:
 log ""
 log "SCRIPT_NAME.................: $SCRIPT_NAME"
 log ""
-log "OS_TYPE.....................: $OSTYPE"
+log "OS_TYPE.....................: $(uname -s)"
 log ""
 log "COMPRESSION.................: $COMPRESSION"
 log ""
@@ -611,7 +611,7 @@ for users in "${VAR_LISTED_USER[@]}"; do
 
 	log "Extract mailbox data for user: $users ..."
 
-        if [ "$OSTYPE" = "FreeBSD" ]; then
+        if [ "$(uname -s)" = "FreeBSD" ] || [ "$(uname -s)" = "OpenBSD" ]; then
 	        $DSYNC_COMMAND -o plugin/quota= backup -u $users $MAILDIR_TYPE:$LOCATION
 	else
 		$DSYNC_COMMAND -o plugin/quota= -f -u $users backup $MAILDIR_TYPE:$LOCATION
@@ -637,7 +637,7 @@ for users in "${VAR_LISTED_USER[@]}"; do
 		cd $DIR_TEMP
 
 		log "Packaging to archive for user: $users ..."
-		if [ "$OSTYPE" = "FreeBSD" ]; then
+		if [ "$(uname -s)" = "FreeBSD" ] || [ "$(uname -s)" = "OpenBSD" ]; then
 			$TAR_COMMAND -cvzf $users-$FILE_BACKUP $USERPART
 		else
 			$TAR_COMMAND -cvzf $users-$FILE_BACKUP $USERPART --atime-preserve --preserve-permissions
@@ -739,7 +739,7 @@ fi
 
 log ""
 END_TIMESTAMP=`$DATE_COMMAND '+%s'`
-if [ "$OSTYPE" = "FreeBSD" ]; then
+if [ "$(uname -s)" = "FreeBSD" ] || [ "$(uname -s)" = "OpenBSD" ]; then
         DELTA=$((END_TIMESTAMP-RUN_TIMESTAMP))
         log "$(printf 'Runtime: %02d:%02d:%02d time elapsed.\n' $((DELTA/3600)) $((DELTA%3600/60)) $((DELTA%60)))"
 else
